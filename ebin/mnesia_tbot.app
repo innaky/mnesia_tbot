@@ -1,0 +1,10 @@
+{application,mnesia_tbot,
+             [{description,"An OTP application"},
+              {vsn,"0.1.0"},
+              {registered,[]},
+              {mod,{mnesia_tbot_app,[]}},
+              {applications,[kernel,stdlib]},
+              {env,[]},
+              {modules,[mnesia_tbot_app,mnesia_tbot_sup]},
+              {licenses,["Apache 2.0"]},
+              {links,[]}]}.
