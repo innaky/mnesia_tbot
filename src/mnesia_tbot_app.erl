@@ -8,7 +8,7 @@
 -behaviour(application).
 
 -export([start/2, stop/1]).
--export([insert_user/1, install/1]).
+-export([insert_user/1, install/1, get_user/1]).
 
 -include_lib("stdlib/include/qlc.hrl").
 -include("include/telegram_users.hrl").
@@ -38,6 +38,16 @@ insert_user(User) ->
 		mnesia:write(Mnuser)
 	end,
     mnesia:transaction(U).
+
+get_user(Username) ->
+    F = fun() ->
+		Q = qlc:q([{U#telegram_users.username, U#telegram_users.id,
+			    U#telegram_users.localtime} 
+			   || U <- mnesia:table(telegram_users),
+			      U#telegram_users.username == Username]),
+		qlc:e(Q)
+	end,
+    mnesia:transaction(F).
 		
 %% internal functions
 format_time() ->
