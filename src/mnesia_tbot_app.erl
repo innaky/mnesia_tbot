@@ -9,6 +9,9 @@
 
 -export([start/2, stop/1]).
 
+-include_lib("stdlib/include/qlc.hrl").
+-include("include/telegram_users.hrl").
+
 start(_StartType, _StartArgs) ->
     mnesia_tbot_sup:start_link().
 

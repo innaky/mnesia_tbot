@@ -1,0 +1,3 @@
+-record(telegram_users, {id, username, localtime}).
+-record(telegram_admins, {id, username, localtime}).
+-record(phones, {name, phone}).
