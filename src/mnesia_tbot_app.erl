@@ -8,8 +8,8 @@
 -behaviour(application).
 
 -export([start/2, stop/1]).
--export([insert_user/1, install/1, get_user/1, get_users/0, op/2, is_hash_valid/1, get_admin/1]).
--export([get_admins/0]).
+-export([insert_user/1, install/1, get_user/1, get_users/0]).
+-export([op/2, deop/1, get_admin/1, get_admins/0, is_admin/1]).
 
 -include_lib("stdlib/include/qlc.hrl").
 -include("include/telegram_users.hrl").
@@ -82,6 +82,21 @@ op(Password, Username) ->
 	    false
     end.
 
+deop(Username) ->
+    {_, User} = get_admin(Username),
+    case User of
+	[] ->
+	    false;
+	_ ->
+	    [{_, Id, Name, Localtime}] = User,
+	    AdminDEL = #telegram_admins{id = Id, username = Name, localtime = Localtime},
+	    T = fun() ->
+			mnesia:delete_object(telegram_admins, AdminDEL, write)
+		end,
+	    mnesia:transaction(T),
+	    ok
+    end.
+
 get_admin(Username) ->
     T = fun() ->
 		Q = qlc:q([A || A <- mnesia:table(telegram_admins),
@@ -106,3 +121,20 @@ format_time() ->
 
 is_hash_valid(Password) ->
     crypto:hash(sha224, Password) == ?OPHASH.
+
+get_admin_by_id(ID) ->
+    T = fun() ->
+		Q = qlc:q([A#telegram_admins.id || A <- mnesia:table(telegram_admins),
+						   A#telegram_admins.id == ID]),
+		qlc:e(Q)
+	end,
+    mnesia:transaction(T).
+
+is_admin(ID) ->
+    {_, Id} = get_admin_by_id(ID),
+    case Id of
+	[] ->
+	    false;
+	_ ->
+	    true
+    end.
