@@ -113,6 +113,15 @@ get_admins() ->
 		qlc:e(Q)
 	end,
     mnesia:transaction(T).
+
+is_admin(ID) ->
+    {_, Id} = get_admin_by_id(ID),
+    case Id of
+	[] ->
+	    false;
+	_ ->
+	    true
+    end.
 		
 %% internal functions
 format_time() ->
@@ -129,12 +138,3 @@ get_admin_by_id(ID) ->
 		qlc:e(Q)
 	end,
     mnesia:transaction(T).
-
-is_admin(ID) ->
-    {_, Id} = get_admin_by_id(ID),
-    case Id of
-	[] ->
-	    false;
-	_ ->
-	    true
-    end.
