@@ -8,7 +8,7 @@
 -behaviour(application).
 
 -export([start/2, stop/1]).
--export([insert_user/1, install/1, get_user/1, get_users/0]).
+-export([insert_user/1, install/1, get_user/1, get_users/0, get_users_ids/0]).
 -export([op/2, deop/1, get_admin/1, get_admins/0, is_admin/1]).
 
 -include_lib("stdlib/include/qlc.hrl").
@@ -122,6 +122,11 @@ is_admin(ID) ->
 	_ ->
 	    true
     end.
+
+get_users_ids() ->
+    {_, Users} = get_users(),
+    Ids = users_ids(Users),
+    Ids.
 		
 %% internal functions
 format_time() ->
@@ -138,3 +143,8 @@ get_admin_by_id(ID) ->
 		qlc:e(Q)
 	end,
     mnesia:transaction(T).
+
+users_ids([]) ->
+    [];
+users_ids([{_, ID, _}|T]) ->
+    [ID | users_ids(T)].
